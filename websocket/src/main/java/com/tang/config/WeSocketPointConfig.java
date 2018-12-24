@@ -1,4 +1,4 @@
-package com.tang.springboot.config;
+package com.tang.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -7,28 +7,26 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
 /**
- * @Description 广播式：即服务端有消息时，会将消息发送给所有连接了当前endpoint的浏览器。
- *  1、EnableWebSocketMessageBroker注解开启使用stomp协议来传输基于代理（message broker）的消息，这时控制器支持使用@MessageMapping 等同@requestMapping
- *  2、注册stomp协议的节点（endpoint),并映射的指定Url
- *  3、注册一个stomp的endpoint，并指定使用sockjs协议
- *  4、配置消息代理（Message Broker）
- *  5、广播式应配置一个/topic消息代理
- *
+ * @Description 点对点式：即消息由谁发送、由谁接收
  * @Author RLY
- * @Date 2018/12/14 15:16
+ * @Date 2018/12/21 16:32
  * @Version 1.0
  **/
 @Configuration
 @EnableWebSocketMessageBroker
-public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+public class WeSocketPointConfig implements WebSocketMessageBrokerConfigurer{
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry){
         registry.addEndpoint("/endpointWisely").withSockJS();
+        //注册一个名为endpointChat的endpoint
+        registry.addEndpoint("/endpointChat").withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic");
+        //点对点式应增加一个queue消息代理
+        registry.enableSimpleBroker("queue","/topic");
     }
+
 }
